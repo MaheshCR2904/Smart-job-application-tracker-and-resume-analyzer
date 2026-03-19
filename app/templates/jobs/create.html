@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Create Job Posting{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="{{ url_for('jobs.manage') }}" class="btn btn-secondary mb-3">
+        <i class="fas fa-arrow-left"></i> Back to Manage Jobs
+    </a>
+    
+    <div class="card">
+        <div class="card-header">
+            <h4>Create New Job Posting</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Job Title *</label>
+                            <input type="text" name="title" id="title" class="form-control" value="{{ data.title or '' }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="company" class="form-label">Company *</label>
+                            <input type="text" name="company" id="company" class="form-control" value="{{ data.company or '' }}" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="location" class="form-label">Location</label>
+                            <input type="text" name="location" id="location" class="form-control" value="{{ data.location or '' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="salary" class="form-label">Salary</label>
+                            <input type="text" name="salary" id="salary" class="form-control" value="{{ data.salary or '' }}" placeholder="e.g. $50,000 - $70,000">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="job_type" class="form-label">Job Type</label>
+                            <select name="job_type" id="job_type" class="form-select">
+                                <option value="">Select Type</option>
+                                <option value="Full-time" {% if data.job_type == 'Full-time' %}selected{% endif %}>Full-time</option>
+                                <option value="Part-time" {% if data.job_type == 'Part-time' %}selected{% endif %}>Part-time</option>
+                                <option value="Contract" {% if data.job_type == 'Contract' %}selected{% endif %}>Contract</option>
+                                <option value="Internship" {% if data.job_type == 'Internship' %}selected{% endif %}>Internship</option>
+                                <option value="Remote" {% if data.job_type == 'Remote' %}selected{% endif %}>Remote</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="application_deadline" class="form-label">Application Deadline</label>
+                            <input type="date" name="application_deadline" id="application_deadline" class="form-control" value="{{ data.application_deadline or '' }}">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="description" class="form-label">Job Description</label>
+                    <textarea name="description" id="description" class="form-control" rows="4">{{ data.description or '' }}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="requirements" class="form-label">Requirements</label>
+                    <textarea name="requirements" id="requirements" class="form-control" rows="4">{{ data.requirements or '' }}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="benefits" class="form-label">Benefits</label>
+                    <textarea name="benefits" id="benefits" class="form-control" rows="3">{{ data.benefits or '' }}</textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Create Job Posting
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,391 @@
+{% extends "base.html" %}
+
+{% block title %}Applications - HR Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hr-page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hr-page-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+    }
+
+    .hr-page-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .hr-page-header p {
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+
+    .filter-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+
+    .filter-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .filter-card .form-label {
+        font-weight: 600;
+        color: #495057;
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .filter-card .form-select,
+    .filter-card .form-control {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        padding: 0.625rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .filter-card .form-select:focus,
+    .filter-card .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .filter-card .btn {
+        border-radius: 10px;
+        padding: 0.625rem 1.25rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .filter-card .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+    }
+
+    .filter-card .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .filter-card .btn-secondary {
+        background: #e9ecef;
+        border: none;
+        color: #495057;
+    }
+
+    .filter-card .btn-secondary:hover {
+        background: #dee2e6;
+    }
+
+    .applications-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .applications-card .card-header {
+        background: white;
+        border-bottom: 1px solid #f0f0f0;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .applications-card .card-header h5 {
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .applications-card .card-header h5 i {
+        color: #667eea;
+    }
+
+    .applications-card .card-body {
+        padding: 0;
+    }
+
+    .applications-table {
+        margin-bottom: 0;
+    }
+
+    .applications-table thead th {
+        background: #f8f9fa;
+        border-bottom: 2px solid #e9ecef;
+        color: #495057;
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem 1.5rem;
+    }
+
+    .applications-table tbody td {
+        padding: 1rem 1.5rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .applications-table tbody tr:hover {
+        background: #f8f9fa;
+    }
+
+    .applications-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .company-cell {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .company-cell .company-name {
+        font-weight: 600;
+        color: #212529;
+    }
+
+    .company-cell .company-location {
+        font-size: 0.75rem;
+        color: #6c757d;
+    }
+
+    .position-cell {
+        font-weight: 500;
+        color: #495057;
+    }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.35rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-pill.applied {
+        background: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+    }
+
+    .status-pill.interview {
+        background: rgba(0, 210, 255, 0.1);
+        color: #00d2ff;
+    }
+
+    .status-pill.offer {
+        background: rgba(56, 239, 125, 0.1);
+        color: #11998e;
+    }
+
+    .status-pill.rejected {
+        background: rgba(245, 87, 108, 0.1);
+        color: #f5576c;
+    }
+
+    .status-pill.pending {
+        background: rgba(255, 171, 0, 0.1);
+        color: #ffab00;
+    }
+
+    .date-cell {
+        color: #6c757d;
+        font-size: 0.875rem;
+    }
+
+    .salary-cell {
+        font-weight: 500;
+        color: #11998e;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.875rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #6c757d;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.3;
+        color: #667eea;
+    }
+
+    .empty-state h5 {
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+
+    .results-count {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+
+    .results-count strong {
+        color: #667eea;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <h1><i class="fas fa-file-signature"></i> Applications</h1>
+        <p>Review and manage all job applications in one place</p>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-card">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('hr.applications') }}" class="row g-3">
+                <div class="col-md-4">
+                    <label for="status" class="form-label">
+                        <i class="fas fa-filter me-1"></i> Filter by Status
+                    </label>
+                    <select name="status" id="status" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="Applied" {% if status == 'Applied' %}selected{% endif %}>Applied</option>
+                        <option value="Interview" {% if status == 'Interview' %}selected{% endif %}>Interview</option>
+                        <option value="Offer" {% if status == 'Offer' %}selected{% endif %}>Offer</option>
+                        <option value="Rejected" {% if status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                        <option value="Pending" {% if status == 'Pending' %}selected{% endif %}>Pending</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="company" class="form-label">
+                        <i class="fas fa-building me-1"></i> Filter by Company
+                    </label>
+                    <input type="text" name="company" id="company" class="form-control" placeholder="Company name" value="{{ company or '' }}">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <div class="d-flex gap-2 w-100">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            <i class="fas fa-search me-2"></i> Apply Filters
+                        </button>
+                        <a href="{{ url_for('hr.applications') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Clear
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Applications Table -->
+    <div class="applications-card">
+        <div class="card-header">
+            <h5><i class="fas fa-list"></i> All Applications</h5>
+            {% if applications %}
+            <span class="results-count">Showing <strong>{{ applications|length }}</strong> applications</span>
+            {% endif %}
+        </div>
+        <div class="card-body p-0">
+            {% if applications %}
+            <div class="table-responsive">
+                <table class="table applications-table">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Position</th>
+                            <th>Status</th>
+                            <th>Applied Date</th>
+                            <th>Salary</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in applications %}
+                        <tr>
+                            <td>
+                                <div class="company-cell">
+                                    <span class="company-name">{{ app.company }}</span>
+                                    {% if app.location %}
+                                    <span class="company-location"><i class="fas fa-map-marker-alt me-1"></i>{{ app.location }}</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="position-cell">{{ app.position }}</td>
+                            <td>
+                                <span class="status-pill {{ app.status|lower }}">
+                                    {{ app.status }}
+                                </span>
+                            </td>
+                            <td class="date-cell">
+                                <i class="fas fa-calendar-alt me-1"></i>
+                                {{ app.created_at.strftime('%b %d, %Y') if app.created_at else 'N/A' }}
+                            </td>
+                            <td>
+                                {% if app.salary %}
+                                <span class="salary-cell">{{ app.salary }}</span>
+                                {% else %}
+                                <span class="text-muted">Not specified</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('hr.view_application', app_id=app._id) }}" class="action-btn">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <h5>No applications found</h5>
+                <p>Try adjusting your filters or check back later</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

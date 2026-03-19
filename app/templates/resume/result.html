@@ -1,0 +1,533 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis Results - Smart Job Tracker{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div class="header-content">
+            <div>
+                <h1><i class="fas fa-chart-bar"></i> Analysis Results</h1>
+                <p>{{ filename }}</p>
+            </div>
+            <div class="header-actions">
+                <a href="{{ url_for('resume.analyze') }}" class="btn btn-outline">
+                    <i class="fas fa-upload"></i> New Analysis
+                </a>
+                <a href="{{ url_for('resume.history') }}" class="btn btn-primary">
+                    <i class="fas fa-history"></i> History
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- ATS Score -->
+    <div class="result-section">
+        <div class="score-card">
+            <div class="score-circle">
+                <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#e0e0e0" stroke-width="8"/>
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#3498db" stroke-width="8"
+                            stroke-dasharray="{{ analysis.ats_score.percentage * 2.83 }} 283"
+                            stroke-linecap="round"
+                            transform="rotate(-90 50 50)"/>
+                </svg>
+                <div class="score-text">
+                    <span class="score-value">{{ analysis.ats_score.percentage|round|int }}%</span>
+                    <span class="score-label">ATS Score</span>
+                </div>
+            </div>
+            
+            <div class="score-details">
+                <h3>ATS Compatibility Analysis</h3>
+                <div class="score-breakdown">
+                    <div class="breakdown-item">
+                        <span>Content Quality</span>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: {{ [analysis.ats_score.score * 20, 100]|min }}%"></div>
+                        </div>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Skills Match</span>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: {{ [analysis.ats_score.skills_found / analysis.ats_score.total_keywords * 100, 100]|min }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detected Skills -->
+    <div class="result-section">
+        <div class="results-grid">
+            <!-- Skills -->
+            <div class="result-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-code"></i> Detected Skills</h3>
+                    <span class="badge">{{ analysis.detected_skills|length }} found</span>
+                </div>
+                <div class="card-body">
+                    {% if analysis.detected_skills %}
+                        <div class="skills-list">
+                            {% for skill in analysis.detected_skills %}
+                                <span class="skill-tag">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-code"></i>
+                            <p>No skills detected</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="result-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-pie"></i> Resume Statistics</h3>
+                </div>
+                <div class="card-body">
+                    <div class="stats-list">
+                        <div class="stat-item">
+                            <span class="stat-label">Word Count</span>
+                            <span class="stat-value">{{ analysis.word_count }}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Text Length</span>
+                            <span class="stat-value">{{ analysis.text_length }} chars</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Top Keywords</span>
+                            <span class="stat-value">{{ analysis.keyword_frequency|length }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Keywords -->
+    <div class="result-section">
+        <div class="result-card full-width">
+            <div class="card-header">
+                <h3><i class="fas fa-search"></i> Top Keywords Found</h3>
+            </div>
+            <div class="card-body">
+                {% if analysis.keyword_frequency %}
+                    <div class="keywords-chart">
+                        {% for word, count in analysis.keyword_frequency[:10] %}
+                            <div class="keyword-bar">
+                                <span class="keyword">{{ word }}</span>
+                                <div class="keyword-progress">
+                                    <div class="keyword-fill" style="width: {{ [count * 10, 100]|min }}%"></div>
+                                </div>
+                                <span class="keyword-count">{{ count }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <p>No keywords found</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Suggestions -->
+    {% if analysis.ats_score.suggestions %}
+        <div class="result-section">
+            <div class="result-card full-width">
+                <div class="card-header">
+                    <h3><i class="fas fa-lightbulb"></i> Suggestions for Improvement</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="suggestions-list">
+                        {% for suggestion in analysis.ats_score.suggestions %}
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                {{ suggestion }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Job Match -->
+    {% if match_result %}
+        <div class="result-section">
+            <div class="match-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-briefcase"></i> Job Description Match</h3>
+                </div>
+                <div class="card-body">
+                    <div class="match-percentage">
+                        <div class="match-circle">
+                            <span>{{ match_result.match_percentage }}%</span>
+                            <small>Match</small>
+                        </div>
+                    </div>
+                    
+                    <div class="match-details">
+                        <div class="match-stat">
+                            <h4>Matched Keywords ({{ match_result.matched_keywords|length }})</h4>
+                            <div class="keywords-list">
+                                {% for keyword in match_result.matched_keywords %}
+                                    <span class="keyword-tag matched">{{ keyword }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        {% if match_result.missing_keywords %}
+                            <div class="match-stat">
+                                <h4>Missing Keywords ({{ match_result.missing_keywords|length }})</h4>
+                                <div class="keywords-list">
+                                    {% for keyword in match_result.missing_keywords[:15] %}
+                                        <span class="keyword-tag missing">{{ keyword }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-header {
+    background: var(--primary-color);
+    color: white;
+    padding: 30px 0;
+    margin-bottom: 30px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-content h1 {
+    margin: 0 0 10px;
+}
+
+.header-content p {
+    margin: 0;
+    opacity: 0.9;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.result-section {
+    margin-bottom: 25px;
+}
+
+.score-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.score-circle {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    flex-shrink: 0;
+}
+
+.score-circle svg {
+    width: 100%;
+    height: 100%;
+}
+
+.score-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.score-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.score-label {
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.score-details h3 {
+    margin: 0 0 20px;
+}
+
+.score-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.breakdown-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.progress-bar {
+    height: 8px;
+    background: var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 4px;
+    transition: width 0.3s;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 25px;
+}
+
+.result-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.result-card.full-width {
+    grid-column: 1 / -1;
+}
+
+.card-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header h3 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.badge {
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+.card-body {
+    padding: 25px;
+}
+
+.skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.skill-tag {
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.stats-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    margin-bottom: 8px;
+    opacity: 0.7;
+    font-size: 0.9rem;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.keywords-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.keyword-bar {
+    display: grid;
+    grid-template-columns: 150px 1fr 50px;
+    align-items: center;
+    gap: 15px;
+}
+
+.keyword {
+    font-weight: 500;
+}
+
+.keyword-progress {
+    height: 8px;
+    background: var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.keyword-fill {
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+.keyword-count {
+    text-align: right;
+    opacity: 0.7;
+}
+
+.suggestions-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.suggestions-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.suggestions-list li:last-child {
+    border-bottom: none;
+}
+
+.suggestions-list li i {
+    color: var(--primary-color);
+    margin-top: 3px;
+}
+
+.match-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.match-percentage {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.match-circle {
+    display: inline-block;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(52, 152, 219, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.match-circle span {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.match-circle small {
+    opacity: 0.7;
+}
+
+.match-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+}
+
+.match-stat h4 {
+    margin: 0 0 15px;
+}
+
+.keywords-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.keyword-tag {
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+}
+
+.keyword-tag.matched {
+    background: rgba(39, 174, 96, 0.1);
+    color: #27ae60;
+}
+
+.keyword-tag.missing {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .score-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .keyword-bar {
+        grid-template-columns: 100px 1fr 40px;
+    }
+    
+    .stats-list {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

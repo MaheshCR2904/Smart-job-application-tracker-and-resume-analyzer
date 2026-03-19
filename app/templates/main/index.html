@@ -1,0 +1,362 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Smart Job Tracker{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <!-- Video Background -->
+    <div class="video-background">
+        <iframe 
+            width="560" 
+            height="315" 
+            src="https://www.youtube.com/embed/Hgg7M3kSqyE?autoplay=1&mute=1&loop=1&playlist=Hgg7M3kSqyE&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1" 
+            title="Background Video" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+        </iframe>
+        <div class="video-overlay"></div>
+    </div>
+    
+    <div class="container" style="position: relative; z-index: 2;">
+        <div class="hero-content">
+            <h1><i class="fas fa-briefcase"></i> Smart Job Application Tracker</h1>
+            <p class="hero-subtitle">Track your job applications, analyze your resume, and land your dream job with AI-powered tools.</p>
+            
+            <div class="hero-actions">
+                {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-rocket"></i> Get Started Free
+                    </a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-lg">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+                    </a>
+                {% endif %}
+            </div>
+            
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Easy Tracking</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Resume Analysis</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Secure & Private</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hero-image">
+            <div class="dashboard-preview">
+                <div class="preview-header">
+                    <i class="fas fa-bars"></i>
+                    <span>Dashboard Preview</span>
+                </div>
+                <div class="preview-content">
+                    <div class="preview-stats">
+                        <div class="preview-stat-card">
+                            <i class="fas fa-briefcase"></i>
+                            <span>12</span>
+                            <small>Total</small>
+                        </div>
+                        <div class="preview-stat-card">
+                            <i class="fas fa-check"></i>
+                            <span>3</span>
+                            <small>Interviews</small>
+                        </div>
+                        <div class="preview-stat-card">
+                            <i class="fas fa-trophy"></i>
+                            <span>1</span>
+                            <small>Offers</small>
+                        </div>
+                    </div>
+                    <div class="preview-chart">
+                        <canvas id="previewChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="features-section">
+    <div class="container">
+        <h2 class="section-title">Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-list-alt"></i>
+                </div>
+                <h3>Job Application Tracker</h3>
+                <p>Track all your job applications in one place. Add company details, job roles, salary, and status updates.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h3>Resume Analyzer</h3>
+                <p>Upload your resume and get AI-powered analysis. Detect skills, check ATS compatibility, and improve your chances.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <h3>Visual Analytics</h3>
+                <p>See your job search progress with beautiful charts and statistics. Track applications by status.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>Smart Search</h3>
+                <p>Quickly find any application by company name, role, or status. Filter and sort your applications.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <h3>CSV Export</h3>
+                <p>Export all your applications to CSV format. Keep backups or use data in other tools.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <h3>Dark Mode</h3>
+                <p>Easy on the eyes with automatic dark mode support. Work comfortably day or night.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="container">
+        <h2>Ready to streamline your job search?</h2>
+        <p>Join thousands of job seekers who trust Smart Job Tracker.</p>
+        {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-rocket"></i> Start Free Today
+            </a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.video-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.video-background #ytplayer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.video-background iframe {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.85) 0%, rgba(118, 75, 162, 0.85) 100%);
+    z-index: 1;
+}
+
+.hero-section {
+    padding: 60px 0;
+    display: flex;
+    align-items: center;
+    min-height: 80vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section .container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+    z-index: 2;
+    position: relative;
+}
+
+.hero-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    opacity: 0.95;
+    color: white;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.hero-stats {
+    display: flex;
+    gap: 30px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+}
+
+.stat-item i {
+    color: white;
+}
+
+.dashboard-preview {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.preview-header {
+    background: var(--primary-color);
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.preview-content {
+    padding: 20px;
+}
+
+.preview-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.preview-stat-card {
+    background: var(--body-bg);
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.preview-stat-card i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+}
+
+.preview-stat-card span {
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: block;
+}
+
+.preview-chart {
+    height: 150px;
+}
+
+@media (max-width: 768px) {
+    .hero-section .container {
+        grid-template-columns: 1fr;
+    }
+    
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-actions {
+        flex-direction: column;
+    }
+    
+    .dashboard-preview {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-stats {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('previewChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Applied', 'Interview', 'Rejected', 'Offer'],
+                datasets: [{
+                    data: [5, 3, 2, 1],
+                    backgroundColor: [
+                        '#3498db',
+                        '#f39c12',
+                        '#e74c3c',
+                        '#27ae60'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

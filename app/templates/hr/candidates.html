@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block title %}Candidates - HR Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hr-page-header {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        padding: 2rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hr-page-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+    }
+
+    .hr-page-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .hr-page-header p {
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+
+    .candidates-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .candidates-card .card-header {
+        background: white;
+        border-bottom: 1px solid #f0f0f0;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .candidates-card .card-header h5 {
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .candidates-card .card-header h5 i {
+        color: #11998e;
+    }
+
+    .candidates-card .card-body {
+        padding: 0;
+    }
+
+    .candidates-table {
+        margin-bottom: 0;
+    }
+
+    .candidates-table thead th {
+        background: #f8f9fa;
+        border-bottom: 2px solid #e9ecef;
+        color: #495057;
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem 1.5rem;
+    }
+
+    .candidates-table tbody td {
+        padding: 1rem 1.5rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .candidates-table tbody tr:hover {
+        background: #f8f9fa;
+    }
+
+    .candidates-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .candidate-cell {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .candidate-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1rem;
+        color: white;
+    }
+
+    .candidate-avatar.gradient-1 {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .candidate-avatar.gradient-2 {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+
+    .candidate-avatar.gradient-3 {
+        background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+    }
+
+    .candidate-avatar.gradient-4 {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .candidate-info .name {
+        font-weight: 600;
+        color: #212529;
+    }
+
+    .candidate-info .email {
+        font-size: 0.75rem;
+        color: #6c757d;
+    }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.35rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-pill.active {
+        background: rgba(56, 239, 125, 0.1);
+        color: #11998e;
+    }
+
+    .status-pill.inactive {
+        background: rgba(245, 87, 108, 0.1);
+        color: #f5576c;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.875rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        border: none;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(17, 153, 142, 0.4);
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #6c757d;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.3;
+        color: #11998e;
+    }
+
+    .empty-state h5 {
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+
+    .results-count {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+
+    .results-count strong {
+        color: #11998e;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <h1><i class="fas fa-users"></i> Candidates</h1>
+        <p>View and manage all registered candidates</p>
+    </div>
+
+    <!-- Candidates Table -->
+    <div class="candidates-card">
+        <div class="card-header">
+            <h5><i class="fas fa-user-friends"></i> All Candidates</h5>
+            {% if candidates %}
+            <span class="results-count">Showing <strong>{{ candidates|length }}</strong> candidates</span>
+            {% endif %}
+        </div>
+        <div class="card-body p-0">
+            {% if candidates %}
+            <div class="table-responsive">
+                <table class="table candidates-table">
+                    <thead>
+                        <tr>
+                            <th>Candidate</th>
+                            <th>Email</th>
+                            <th>Joined Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for candidate in candidates %}
+                        <tr>
+                            <td>
+                                <div class="candidate-cell">
+                                    <div class="candidate-avatar gradient-{{ (loop.index % 4) + 1 }}">
+                                        {{ candidate.username[0]|upper }}
+                                    </div>
+                                    <div class="candidate-info">
+                                        <div class="name">{{ candidate.username }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <i class="fas fa-envelope me-2" style="color: #6c757d;"></i>
+                                {{ candidate.email }}
+                            </td>
+                            <td>
+                                <i class="fas fa-calendar-alt me-2" style="color: #6c757d;"></i>
+                                {{ candidate.created_at.strftime('%b %d, %Y') if candidate.created_at else 'N/A' }}
+                            </td>
+                            <td>
+                                {% if candidate.is_active %}
+                                <span class="status-pill active">
+                                    <i class="fas fa-check-circle me-1"></i> Active
+                                </span>
+                                {% else %}
+                                <span class="status-pill inactive">
+                                    <i class="fas fa-times-circle me-1"></i> Inactive
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('hr.view_candidate', user_id=candidate._id) }}" class="action-btn">
+                                    <i class="fas fa-eye"></i> View Profile
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-users"></i>
+                <h5>No candidates found</h5>
+                <p>There are no registered candidates yet</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

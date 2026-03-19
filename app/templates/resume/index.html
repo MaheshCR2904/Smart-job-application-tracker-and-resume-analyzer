@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+
+{% block title %}Resume Analyzer - Smart Job Tracker{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div class="header-content">
+            <div>
+                <h1><i class="fas fa-file-alt"></i> Resume Analyzer</h1>
+                <p>Analyze and optimize your resume for better job matches</p>
+            </div>
+            <a href="{{ url_for('resume.analyze') }}" class="btn btn-primary">
+                <i class="fas fa-upload"></i> Analyze New Resume
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="resume-grid">
+        <!-- Analyze Card -->
+        <div class="resume-card analyze-card">
+            <div class="card-icon">
+                <i class="fas fa-magic"></i>
+            </div>
+            <h3>AI-Powered Analysis</h3>
+            <p>Upload your resume and get instant AI-powered analysis including skills detection, ATS score, and improvement suggestions.</p>
+            <a href="{{ url_for('resume.analyze') }}" class="btn btn-primary">
+                <i class="fas fa-upload"></i> Upload Resume
+            </a>
+        </div>
+
+        <!-- Job Match Card -->
+        <div class="resume-card match-card">
+            <div class="card-icon">
+                <i class="fas fa-briefcase"></i>
+            </div>
+            <h3>Job Description Matching</h3>
+            <p>Compare your resume against job descriptions to see how well you match and identify missing keywords.</p>
+            <a href="{{ url_for('resume.analyze') }}" class="btn btn-outline">
+                <i class="fas fa-search"></i> Match Resume
+            </a>
+        </div>
+
+        <!-- History Card -->
+        <div class="resume-card history-card">
+            <div class="card-icon">
+                <i class="fas fa-history"></i>
+            </div>
+            <h3>Analysis History</h3>
+            <p>View and compare your previous resume analyses to track improvements over time.</p>
+            <a href="{{ url_for('resume.history') }}" class="btn btn-outline">
+                <i class="fas fa-clock"></i> View History
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Analyses -->
+    {% if analyses %}
+        <div class="recent-analyses">
+            <h3><i class="fas fa-history"></i> Recent Analyses</h3>
+            <div class="analyses-list">
+                {% for analysis in analyses[:5] %}
+                    <div class="analysis-item">
+                        <div class="analysis-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="analysis-info">
+                            <h4>{{ analysis.filename }}</h4>
+                            <p>{{ analysis.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                        </div>
+                        <div class="analysis-score">
+                            {% if analysis.analysis.ats_score %}
+                                <span class="score">{{ analysis.analysis.ats_score.percentage|round|int }}%</span>
+                                <small>ATS Score</small>
+                            {% endif %}
+                        </div>
+                        <a href="{{ url_for('resume.view_result', analysis_id=analysis._id) }}" class="btn btn-sm btn-outline">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            {% if total > 5 %}
+                <div class="view-all">
+                    <a href="{{ url_for('resume.history') }}" class="btn btn-outline btn-sm">
+                        View All Analyses ({{ total }})
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-file-alt"></i>
+            <h3>No analyses yet</h3>
+            <p>Upload your first resume to get started with AI-powered analysis.</p>
+            <a href="{{ url_for('resume.analyze') }}" class="btn btn-primary">
+                <i class="fas fa-upload"></i> Upload Resume
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-header {
+    background: var(--primary-color);
+    color: white;
+    padding: 30px 0;
+    margin-bottom: 30px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-content h1 {
+    margin: 0 0 10px;
+}
+
+.header-content p {
+    margin: 0;
+    opacity: 0.9;
+}
+
+.resume-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.resume-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.resume-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 2rem;
+}
+
+.analyze-card .card-icon {
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+}
+
+.match-card .card-icon {
+    background: rgba(155, 89, 182, 0.1);
+    color: #9b59b6;
+}
+
+.history-card .card-icon {
+    background: rgba(46, 204, 113, 0.1);
+    color: #27ae60;
+}
+
+.resume-card h3 {
+    margin: 0 0 15px;
+}
+
+.resume-card p {
+    margin: 0 0 20px;
+    opacity: 0.8;
+}
+
+.recent-analyses {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 25px;
+}
+
+.recent-analyses h3 {
+    margin: 0 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.analyses-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.analysis-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: var(--body-bg);
+    border-radius: 8px;
+}
+
+.analysis-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 8px;
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.analysis-info {
+    flex: 1;
+}
+
+.analysis-info h4 {
+    margin: 0 0 5px;
+}
+
+.analysis-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.analysis-score {
+    text-align: center;
+    padding: 0 15px;
+}
+
+.analysis-score .score {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.analysis-score small {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+.view-all {
+    text-align: center;
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .analysis-item {
+        flex-wrap: wrap;
+    }
+    
+    .analysis-score {
+        width: 100%;
+        padding: 10px 0 0;
+        text-align: center;
+        order: 3;
+    }
+}
+</style>
+{% endblock %}

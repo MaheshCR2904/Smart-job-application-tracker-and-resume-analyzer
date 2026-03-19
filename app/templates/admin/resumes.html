@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Resume Analyses - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-file-alt"></i> Manage Resume Analyses</h2>
+        <a href="{{ url_for('admin.index') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    
+    <div class="table-card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Filename</th>
+                        <th>User</th>
+                        <th>Score</th>
+                        <th>Skills Found</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for resume in resumes %}
+                    <tr>
+                        <td><strong>{{ resume.filename }}</strong></td>
+                        <td>{{ resume.user_id }}</td>
+                        <td>
+                            {% if resume.analysis_score %}
+                            <span class="badge bg-success">{{ resume.analysis_score }}%</span>
+                            {% else %}
+                            <span class="badge bg-secondary">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ resume.skills_found|length if resume.skills_found else 0 }}</td>
+                        <td>{{ resume.created_at.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{{ url_for('admin.view_resume', resume_id=resume._id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

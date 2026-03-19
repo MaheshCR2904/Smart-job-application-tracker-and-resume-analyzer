@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block title %}About - Smart Job Tracker{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-info-circle"></i> About Smart Job Tracker</h1>
+    </div>
+</div>
+
+<div class="container">
+    <div class="about-content">
+        <section class="about-section">
+            <h2><i class="fas fa-rocket"></i> What is Smart Job Tracker?</h2>
+            <p>Smart Job Tracker is a comprehensive web application designed to help job seekers manage their job search process efficiently. Built with modern technologies, it offers powerful features to track applications, analyze resumes, and improve job search strategies.</p>
+        </section>
+
+        <section class="about-section">
+            <h2><i class="fas fa-features"></i> Key Features</h2>
+            <div class="features-list">
+                <div class="feature-item">
+                    <i class="fas fa-list-alt"></i>
+                    <div>
+                        <h3>Job Application Tracker</h3>
+                        <p>Keep all your job applications organized in one place. Track company details, job roles, salaries, and application status.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-file-alt"></i>
+                    <div>
+                        <h3>Resume Analyzer</h3>
+                        <p>Upload your resume and get AI-powered analysis. Detect skills, check ATS compatibility, and get improvement suggestions.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-chart-pie"></i>
+                    <div>
+                        <h3>Visual Analytics</h3>
+                        <p>View your job search progress with beautiful charts and statistics. Track applications by status and identify patterns.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-search"></i>
+                    <div>
+                        <h3>Smart Matching</h3>
+                        <p>Compare your resume against job descriptions to see how well you match and identify missing keywords.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-file-export"></i>
+                    <div>
+                        <h3>CSV Export</h3>
+                        <p>Export all your applications to CSV format for backup or analysis in other tools.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-moon"></i>
+                    <div>
+                        <h3>Dark Mode</h3>
+                        <p>Easy on the eyes with automatic dark mode support. Work comfortably day or night.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section">
+            <h2><i class="fas fa-tools"></i> Technology Stack</h2>
+            <div class="tech-grid">
+                <div class="tech-category">
+                    <h3>Backend</h3>
+                    <ul>
+                        <li>Python Flask</li>
+                        <li>MongoDB</li>
+                        <li>Flask-Login</li>
+                        <li>Flask-Bcrypt</li>
+                    </ul>
+                </div>
+                <div class="tech-category">
+                    <h3>Frontend</h3>
+                    <ul>
+                        <li>HTML5</li>
+                        <li>CSS3</li>
+                        <li>JavaScript (ES6+)</li>
+                        <li>Chart.js</li>
+                    </ul>
+                </div>
+                <div class="tech-category">
+                    <h3>Libraries</h3>
+                    <ul>
+                        <li>PyPDF2</li>
+                        <li>python-docx</li>
+                        <li>Flask-PyMongo</li>
+                        <li>Flask-CORS</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section">
+            <h2><i class="fas fa-shield-alt"></i> Privacy & Security</h2>
+            <p>Your data is important to us. Smart Job Tracker uses industry-standard security practices to protect your information:</p>
+            <ul class="security-list">
+                <li><i class="fas fa-check"></i> Passwords are securely hashed using Bcrypt</li>
+                <li><i class="fas fa-check"></i> All data is stored securely in MongoDB</li>
+                <li><i class="fas fa-check"></i> Session management with secure cookies</li>
+                <li><i class="fas fa-check"></i> No data is shared with third parties</li>
+            </ul>
+        </section>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-header {
+    background: var(--primary-color);
+    color: white;
+    padding: 40px 0;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    margin: 0;
+}
+
+.about-content {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.about-section {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.about-section h2 {
+    margin: 0 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.about-section h2 i {
+    color: var(--primary-color);
+}
+
+.about-section p {
+    line-height: 1.8;
+    margin: 0;
+}
+
+.features-list {
+    display: grid;
+    gap: 20px;
+}
+
+.feature-item {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    background: var(--body-bg);
+    border-radius: 10px;
+}
+
+.feature-item i {
+    font-size: 2rem;
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.feature-item h3 {
+    margin: 0 0 8px;
+}
+
+.feature-item p {
+    margin: 0;
+}
+
+.tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 25px;
+}
+
+.tech-category {
+    padding: 20px;
+    background: var(--body-bg);
+    border-radius: 10px;
+}
+
+.tech-category h3 {
+    margin: 0 0 15px;
+    color: var(--primary-color);
+}
+
+.tech-category ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.tech-category li {
+    margin-bottom: 8px;
+}
+
+.security-list {
+    margin: 15px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.security-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.security-list i {
+    color: var(--primary-color);
+}
+</style>
+{% endblock %}
