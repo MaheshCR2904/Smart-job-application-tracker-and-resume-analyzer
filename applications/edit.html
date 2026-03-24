@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Application - Smart Job Tracker{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-edit"></i> Edit Application</h1>
+        <p>Update job application details</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="form-container">
+        <form method="POST" class="application-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="company_name">
+                        <i class="fas fa-building"></i> Company Name *
+                    </label>
+                    <input type="text" 
+                           id="company_name" 
+                           name="company_name" 
+                           required
+                           placeholder="e.g., Google, Microsoft"
+                           value="{{ application.company_name }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="job_role">
+                        <i class="fas fa-briefcase"></i> Job Role *
+                    </label>
+                    <input type="text" 
+                           id="job_role" 
+                           name="job_role" 
+                           required
+                           placeholder="e.g., Software Engineer"
+                           value="{{ application.job_role }}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="location">
+                        <i class="fas fa-map-marker-alt"></i> Location
+                    </label>
+                    <input type="text" 
+                           id="location" 
+                           name="location" 
+                           placeholder="e.g., San Francisco, CA"
+                           value="{{ application.location or '' }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="salary">
+                        <i class="fas fa-money-bill"></i> Salary
+                    </label>
+                    <input type="text" 
+                           id="salary" 
+                           name="salary" 
+                           placeholder="e.g., $100,000 - $150,000"
+                           value="{{ application.salary or '' }}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="application_date">
+                        <i class="fas fa-calendar"></i> Application Date *
+                    </label>
+                    <input type="date" 
+                           id="application_date" 
+                           name="application_date" 
+                           required
+                           value="{% if application.application_date is string %}{{ application.application_date }}{% else %}{{ application.application_date.strftime('%Y-%m-%d') }}{% endif %}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="status">
+                        <i class="fas fa-tasks"></i> Status *
+                    </label>
+                    <select id="status" name="status" required>
+                        <option value="Applied" {% if application.status == 'Applied' %}selected{% endif %}>Applied</option>
+                        <option value="Interview" {% if application.status == 'Interview' %}selected{% endif %}>Interview</option>
+                        <option value="Rejected" {% if application.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                        <option value="Offer" {% if application.status == 'Offer' %}selected{% endif %}>Offer</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="notes">
+                    <i class="fas fa-sticky-note"></i> Notes
+                </label>
+                <textarea id="notes" 
+                          name="notes" 
+                          rows="4"
+                          placeholder="Add any notes about this application...">{{ application.notes or '' }}</textarea>
+            </div>
+            
+            <div class="form-actions">
+                <a href="{{ url_for('applications.view', application_id=application._id) }}" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Update Application
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-header {
+    background: var(--primary-color);
+    color: white;
+    padding: 30px 0;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    margin: 0 0 10px;
+}
+
+.page-header p {
+    margin: 0;
+    opacity: 0.9;
+}
+
+.form-container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.application-form {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-group label i {
+    margin-right: 8px;
+    color: var(--primary-color);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    background: var(--body-bg);
+    color: var(--text-color);
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    margin-top: 10px;
+}
+
+@media (max-width: 576px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

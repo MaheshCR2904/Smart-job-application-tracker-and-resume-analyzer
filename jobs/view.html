@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}{{ job.title }} - Job Details{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="{{ url_for('jobs.index') }}" class="btn btn-secondary mb-3">
+        <i class="fas fa-arrow-left"></i> Back to Jobs
+    </a>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">{{ job.title }}</h4>
+                    {% if job.is_active %}
+                    <span class="badge bg-success">Active</span>
+                    {% else %}
+                    <span class="badge bg-secondary">Closed</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div class="job-info mb-4">
+                        <p><strong><i class="fas fa-building"></i> Company:</strong> {{ job.company }}</p>
+                        <p><strong><i class="fas fa-map-marker-alt"></i> Location:</strong> {{ job.location or 'Not specified' }}</p>
+                        {% if job.job_type %}
+                        <p><strong><i class="fas fa-clock"></i> Job Type:</strong> {{ job.job_type }}</p>
+                        {% endif %}
+                        {% if job.salary %}
+                        <p><strong><i class="fas fa-money-bill"></i> Salary:</strong> {{ job.salary }}</p>
+                        {% endif %}
+                        {% if job.application_deadline %}
+                        <p><strong><i class="fas fa-calendar"></i> Application Deadline:</strong> {{ job.application_deadline }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    {% if job.description %}
+                    <div class="mb-4">
+                        <h5>Job Description</h5>
+                        <p>{{ job.description }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if job.requirements %}
+                    <div class="mb-4">
+                        <h5>Requirements</h5>
+                        <p>{{ job.requirements }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if job.benefits %}
+                    <div class="mb-4">
+                        <h5>Benefits</h5>
+                        <p>{{ job.benefits }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    {% if current_user.is_authenticated %}
+                        {% if has_applied %}
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> You have already applied for this job!
+                        </div>
+                        <a href="{{ url_for('applications.index') }}" class="btn btn-outline-primary w-100">
+                            View My Applications
+                        </a>
+                        {% elif job.is_active %}
+                        <h5 class="mb-3">Apply for this Job</h5>
+                        <form method="POST" action="{{ url_for('jobs.apply', job_id=job._id) }}">
+                            <div class="mb-3">
+                                <label for="cover_letter" class="form-label">Cover Letter (Optional)</label>
+                                <textarea name="cover_letter" id="cover_letter" class="form-control" rows="4" placeholder="Tell us why you're a good fit..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-paper-plane"></i> Submit Application
+                            </button>
+                        </form>
+                        {% else %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i> This job is no longer accepting applications.
+                        </div>
+                        {% endif %}
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Please login to apply for this job.
+                    </div>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary w-100 mb-2">Login</a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary w-100">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

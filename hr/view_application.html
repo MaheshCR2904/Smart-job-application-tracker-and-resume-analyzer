@@ -1,0 +1,459 @@
+{% extends "base.html" %}
+
+{% block title %}Application Details - HR Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hr-page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hr-page-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+    }
+
+    .hr-page-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .hr-page-header p {
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border: none;
+    }
+
+    .back-btn:hover {
+        background: rgba(255,255,255,0.3);
+        color: white;
+        transform: translateX(-5px);
+    }
+
+    .detail-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    .detail-card .card-header {
+        background: white;
+        border-bottom: 1px solid #f0f0f0;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .detail-card .card-header h5 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .detail-card .card-header .header-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1rem;
+    }
+
+    .detail-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .info-item.full-width {
+        grid-column: span 2;
+    }
+
+    .info-item .label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6c757d;
+    }
+
+    .info-item .value {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #212529;
+    }
+
+    .info-item .value a {
+        color: #667eea;
+        text-decoration: none;
+    }
+
+    .info-item .value a:hover {
+        text-decoration: underline;
+    }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.35rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-pill.applied {
+        background: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+    }
+
+    .status-pill.interview {
+        background: rgba(0, 210, 255, 0.1);
+        color: #00d2ff;
+    }
+
+    .status-pill.offer {
+        background: rgba(56, 239, 125, 0.1);
+        color: #11998e;
+    }
+
+    .status-pill.rejected {
+        background: rgba(245, 87, 108, 0.1);
+        color: #f5576c;
+    }
+
+    .status-pill.pending {
+        background: rgba(255, 171, 0, 0.1);
+        color: #ffab00;
+    }
+
+    .notes-box {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    /* Candidate Card */
+    .candidate-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    .candidate-card .card-header {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .candidate-card .card-header h5 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .candidate-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .candidate-profile {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .candidate-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: white;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+
+    .candidate-details .name {
+        font-weight: 700;
+        font-size: 1.125rem;
+        color: #212529;
+    }
+
+    .candidate-details .email {
+        color: #6c757d;
+        font-size: 0.875rem;
+    }
+
+    .view-profile-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.875rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        border: none;
+    }
+
+    .view-profile-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(17, 153, 142, 0.4);
+        color: white;
+    }
+
+    /* Status Update Card */
+    .status-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .status-card .card-header {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .status-card .card-header h5 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .status-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .status-card .form-label {
+        font-weight: 600;
+        color: #495057;
+        font-size: 0.875rem;
+    }
+
+    .status-card .form-select {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        padding: 0.625rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .status-card .form-select:focus {
+        border-color: #f5576c;
+        box-shadow: 0 0 0 3px rgba(245, 87, 108, 0.1);
+    }
+
+    .update-btn {
+        width: 100%;
+        padding: 0.75rem;
+        border-radius: 10px;
+        font-weight: 600;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .update-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4);
+    }
+
+    @media (max-width: 768px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .info-item.full-width {
+            grid-column: span 1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <h1><i class="fas fa-file-signature"></i> Application Details</h1>
+        <p>View and manage application information</p>
+        <a href="{{ url_for('hr.applications') }}" class="back-btn mt-3">
+            <i class="fas fa-arrow-left"></i> Back to Applications
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Application Details -->
+        <div class="col-md-8">
+            <div class="detail-card">
+                <div class="card-header">
+                    <div class="header-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h5>Application Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="label">Company</span>
+                            <span class="value">{{ application.company }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Position</span>
+                            <span class="value">{{ application.position }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Status</span>
+                            <span class="value">
+                                <span class="status-pill {{ application.status|lower }}">
+                                    {{ application.status }}
+                                </span>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Applied Date</span>
+                            <span class="value">
+                                <i class="fas fa-calendar-alt me-1" style="color: #6c757d;"></i>
+                                {{ application.created_at.strftime('%B %d, %Y') if application.created_at else 'N/A' }}
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Salary</span>
+                            <span class="value" style="color: #11998e; font-weight: 600;">
+                                {{ application.salary if application.salary else 'Not specified' }}
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Location</span>
+                            <span class="value">
+                                <i class="fas fa-map-marker-alt me-1" style="color: #6c757d;"></i>
+                                {{ application.location if application.location else 'Not specified' }}
+                            </span>
+                        </div>
+                        {% if application.notes %}
+                        <div class="info-item full-width">
+                            <span class="label">Notes</span>
+                            <div class="notes-box">
+                                {{ application.notes }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if application.job_url %}
+                        <div class="info-item full-width">
+                            <span class="label">Job URL</span>
+                            <span class="value">
+                                <a href="{{ application.job_url }}" target="_blank">
+                                    <i class="fas fa-external-link-alt me-1"></i>
+                                    {{ application.job_url }}
+                                </a>
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <!-- Candidate Info -->
+            <div class="candidate-card">
+                <div class="card-header">
+                    <i class="fas fa-user"></i>
+                    <h5>Candidate</h5>
+                </div>
+                <div class="card-body">
+                    <div class="candidate-profile">
+                        <div class="candidate-avatar">{{ candidate.username[0]|upper }}</div>
+                        <div class="candidate-details">
+                            <div class="name">{{ candidate.username }}</div>
+                            <div class="email">{{ candidate.email }}</div>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('hr.view_candidate', user_id=candidate._id) }}" class="view-profile-btn mt-3">
+                        <i class="fas fa-user"></i> View Full Profile
+                    </a>
+                </div>
+            </div>
+
+            <!-- Status Update -->
+            <div class="status-card">
+                <div class="card-header">
+                    <i class="fas fa-sync-alt"></i>
+                    <h5>Update Status</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('hr.update_status', app_id=application._id) }}">
+                        <div class="mb-3">
+                            <label for="status" class="form-label">New Status</label>
+                            <select name="status" id="status" class="form-select">
+                                <option value="Applied" {% if application.status == 'Applied' %}selected{% endif %}>Applied</option>
+                                <option value="Interview" {% if application.status == 'Interview' %}selected{% endif %}>Interview</option>
+                                <option value="Offer" {% if application.status == 'Offer' %}selected{% endif %}>Offer</option>
+                                <option value="Rejected" {% if application.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                                <option value="Pending" {% if application.status == 'Pending' %}selected{% endif %}>Pending</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn update-btn">
+                            <i class="fas fa-check me-2"></i> Update Status
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

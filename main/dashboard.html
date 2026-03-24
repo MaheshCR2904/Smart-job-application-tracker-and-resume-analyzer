@@ -1,0 +1,398 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Smart Job Tracker{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="container">
+        <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+        <p>Welcome back, {{ current_user.username }}!</p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon total">
+                <i class="fas fa-briefcase"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.total }}</h3>
+                <p>Total Applications</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon applied">
+                <i class="fas fa-paper-plane"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.Applied }}</h3>
+                <p>Applied</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon interview">
+                <i class="fas fa-comments"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.Interview }}</h3>
+                <p>Interviews</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon offer">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.Offer }}</h3>
+                <p>Offers</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon rejected">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.Rejected }}</h3>
+                <p>Rejected</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <!-- Chart Section -->
+        <div class="dashboard-card chart-card">
+            <div class="card-header">
+                <h3><i class="fas fa-chart-pie"></i> Application Status</h3>
+            </div>
+            <div class="card-body">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Recent Applications -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3><i class="fas fa-clock"></i> Recent Applications</h3>
+                <a href="{{ url_for('applications.index') }}" class="btn btn-sm btn-outline">
+                    View All
+                </a>
+            </div>
+            <div class="card-body">
+                {% if recent_apps %}
+                    <div class="recent-apps-list">
+                        {% for app in recent_apps %}
+                            <div class="recent-app-item">
+                                <div class="app-info">
+                                    <h4>{{ app.job_role }}</h4>
+                                    <p>{{ app.company_name }}</p>
+                                </div>
+                                <span class="status-badge status-{{ app.status|lower }}">
+                                    {{ app.status }}
+                                </span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-briefcase"></i>
+                        <p>No applications yet</p>
+                        <a href="{{ url_for('applications.new') }}" class="btn btn-primary">
+                            Add First Application
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+        <div class="actions-grid">
+            {% if current_user.is_admin_user or current_user.is_hr %}
+            <a href="{{ url_for('applications.new') }}" class="action-card">
+                <i class="fas fa-plus-circle"></i>
+                <span>Add Application</span>
+            </a>
+            {% endif %}
+            <a href="{{ url_for('resume.analyze') }}" class="action-card">
+                <i class="fas fa-file-upload"></i>
+                <span>Analyze Resume</span>
+            </a>
+            <a href="{{ url_for('applications.export') }}" class="action-card">
+                <i class="fas fa-file-export"></i>
+                <span>Export CSV</span>
+            </a>
+            <a href="{{ url_for('resume.index') }}" class="action-card">
+                <i class="fas fa-history"></i>
+                <span>Resume History</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.dashboard-header {
+    background: var(--primary-color);
+    color: white;
+    padding: 40px 0;
+    margin-bottom: 30px;
+}
+
+.dashboard-header h1 {
+    margin-bottom: 10px;
+}
+
+.dashboard-header p {
+    opacity: 0.9;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.stat-icon.total {
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+}
+
+.stat-icon.applied {
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+}
+
+.stat-icon.interview {
+    background: rgba(243, 156, 18, 0.1);
+    color: #f39c12;
+}
+
+.stat-icon.offer {
+    background: rgba(39, 174, 96, 0.1);
+    color: #27ae60;
+}
+
+.stat-icon.rejected {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+}
+
+.stat-info h3 {
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.stat-info p {
+    margin: 5px 0 0;
+    opacity: 0.7;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.dashboard-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.chart-card .card-body {
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.recent-apps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.recent-app-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: var(--body-bg);
+    border-radius: 8px;
+}
+
+.app-info h4 {
+    margin: 0 0 5px;
+    font-size: 1rem;
+}
+
+.app-info p {
+    margin: 0;
+    opacity: 0.7;
+    font-size: 0.9rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 30px;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    opacity: 0.3;
+    margin-bottom: 15px;
+}
+
+.empty-state p {
+    margin-bottom: 20px;
+}
+
+.quick-actions {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+.quick-actions h3 {
+    margin: 0 0 20px;
+    font-size: 1.2rem;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.action-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    background: var(--body-bg);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.action-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.action-card i {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+}
+
+.action-card span {
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Status Chart
+    const chartData = {{ chart_data | safe }};
+    
+    const ctx = document.getElementById('statusChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: chartData.labels,
+                datasets: [{
+                    data: chartData.data,
+                    backgroundColor: [
+                        '#3498db',  // Applied
+                        '#f39c12',  // Interview
+                        '#e74c3c',  // Rejected
+                        '#27ae60'   // Offer
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    }
+                },
+                cutout: '60%'
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

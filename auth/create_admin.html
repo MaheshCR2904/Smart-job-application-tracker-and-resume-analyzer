@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Create Admin User - Smart Job Tracker{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <i class="fas fa-shield-alt"></i>
+                <h2>Create Admin User</h2>
+                <p>Create the first admin user for the system</p>
+            </div>
+            
+            <form method="POST" class="auth-form">
+                <div class="form-group">
+                    <label for="username">
+                        <i class="fas fa-user"></i> Username
+                    </label>
+                    <input type="text" id="username" name="username" required minlength="3" 
+                           placeholder="Enter username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">
+                        <i class="fas fa-envelope"></i> Email Address
+                    </label>
+                    <input type="email" id="email" name="email" required 
+                           placeholder="Enter email address">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <input type="password" id="password" name="password" required minlength="6" 
+                           placeholder="Enter password (min 6 characters)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm_password">
+                        <i class="fas fa-lock"></i> Confirm Password
+                    </label>
+                    <input type="password" id="confirm_password" name="confirm_password" required 
+                           placeholder="Confirm your password">
+                </div>
+                
+                <div class="form-group">
+                    <label for="admin_code">
+                        <i class="fas fa-key"></i> Admin Creation Code
+                    </label>
+                    <input type="password" id="admin_code" name="admin_code" required 
+                           placeholder="Enter admin creation code">
+                    <small class="form-text text-muted">
+                        Use the admin creation code to create the first admin user
+                    </small>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-shield-alt"></i> Create Admin User
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></p>
+                <p>Regular user? <a href="{{ url_for('auth.register') }}">Register here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,516 @@
+{% extends "base.html" %}
+
+{% block title %}Resume Analysis - HR Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hr-page-header {
+        background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+        padding: 2rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hr-page-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+    }
+
+    .hr-page-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .hr-page-header p {
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border: none;
+    }
+
+    .back-btn:hover {
+        background: rgba(255,255,255,0.3);
+        color: white;
+        transform: translateX(-5px);
+    }
+
+    .detail-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    .detail-card .card-header {
+        background: white;
+        border-bottom: 1px solid #f0f0f0;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .detail-card .card-header h5 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .detail-card .card-header .header-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1rem;
+    }
+
+    .detail-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .info-item .label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6c757d;
+    }
+
+    .info-item .value {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #212529;
+    }
+
+    .score-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .score-badge.excellent {
+        background: linear-gradient(135deg, rgba(56, 239, 125, 0.15) 0%, rgba(17, 153, 142, 0.15) 100%);
+        color: #11998e;
+    }
+
+    .score-badge.good {
+        background: linear-gradient(135deg, rgba(0, 210, 255, 0.15) 0%, rgba(58, 123, 213, 0.15) 100%);
+        color: #3a7bd5;
+    }
+
+    .score-badge.average {
+        background: linear-gradient(135deg, rgba(255, 171, 0, 0.15) 0%, rgba(255, 111, 0, 0.15) 100%);
+        color: #ffab00;
+    }
+
+    .score-badge.poor {
+        background: linear-gradient(135deg, rgba(245, 87, 108, 0.15) 0%, rgba(245, 87, 108, 0.1) 100%);
+        color: #f5576c;
+    }
+
+    /* Score Cards */
+    .score-card {
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .score-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .score-card .score-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+
+    .score-card .score-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .score-card.excellent {
+        background: linear-gradient(135deg, rgba(56, 239, 125, 0.1) 0%, rgba(17, 153, 142, 0.1) 100%);
+    }
+
+    .score-card.excellent .score-value {
+        color: #11998e;
+    }
+
+    .score-card.excellent .score-label {
+        color: #11998e;
+    }
+
+    .score-card.good {
+        background: linear-gradient(135deg, rgba(0, 210, 255, 0.1) 0%, rgba(58, 123, 213, 0.1) 100%);
+    }
+
+    .score-card.good .score-value {
+        color: #3a7bd5;
+    }
+
+    .score-card.good .score-label {
+        color: #3a7bd5;
+    }
+
+    .score-card.average {
+        background: linear-gradient(135deg, rgba(255, 171, 0, 0.1) 0%, rgba(255, 111, 0, 0.1) 100%);
+    }
+
+    .score-card.average .score-value {
+        color: #ffab00;
+    }
+
+    .score-card.average .score-label {
+        color: #ffab00;
+    }
+
+    .score-card.poor {
+        background: linear-gradient(135deg, rgba(245, 87, 108, 0.1) 0%, rgba(245, 87, 108, 0.05) 100%);
+    }
+
+    .score-card.poor .score-value {
+        color: #f5576c;
+    }
+
+    .score-card.poor .score-label {
+        color: #f5576c;
+    }
+
+    /* Recommendations */
+    .recommendations-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .recommendations-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+        margin-bottom: 0.75rem;
+    }
+
+    .recommendations-list li:last-child {
+        margin-bottom: 0;
+    }
+
+    .recommendations-list .rec-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        font-size: 0.875rem;
+    }
+
+    .recommendations-list .rec-text {
+        color: #495057;
+        line-height: 1.5;
+    }
+
+    /* Skills */
+    .skill-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 500;
+        font-size: 0.875rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        color: #667eea;
+    }
+
+    /* Candidate Card */
+    .candidate-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .candidate-card .card-header {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .candidate-card .card-header h5 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .candidate-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .candidate-profile {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .candidate-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: white;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+
+    .candidate-details .name {
+        font-weight: 700;
+        font-size: 1.125rem;
+        color: #212529;
+    }
+
+    .candidate-details .email {
+        color: #6c757d;
+        font-size: 0.875rem;
+    }
+
+    .view-profile-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.875rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        border: none;
+    }
+
+    .view-profile-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(17, 153, 142, 0.4);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="hr-page-header">
+        <h1><i class="fas fa-file-pdf"></i> Resume Analysis</h1>
+        <p>Detailed resume analysis and scoring</p>
+        <a href="{{ url_for('hr.resumes') }}" class="back-btn mt-3">
+            <i class="fas fa-arrow-left"></i> Back to Resumes
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Resume Details -->
+        <div class="col-md-8">
+            <!-- Basic Info -->
+            <div class="detail-card">
+                <div class="card-header">
+                    <div class="header-icon" style="background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h5>Resume Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="label">File Name</span>
+                            <span class="value">
+                                <i class="fas fa-file-pdf me-2" style="color: #f5576c;"></i>
+                                {{ resume.filename }}
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Analysis Date</span>
+                            <span class="value">
+                                <i class="fas fa-calendar-alt me-2" style="color: #6c757d;"></i>
+                                {{ resume.created_at.strftime('%B %d, %Y at %H:%M') if resume.created_at else 'N/A' }}
+                            </span>
+                        </div>
+                        {% if resume.overall_score %}
+                        <div class="info-item">
+                            <span class="label">Overall Score</span>
+                            <span class="value">
+                                {% if resume.overall_score >= 80 %}
+                                <span class="score-badge excellent">
+                                    <i class="fas fa-star"></i> {{ resume.overall_score }}%
+                                </span>
+                                {% elif resume.overall_score >= 60 %}
+                                <span class="score-badge good">
+                                    <i class="fas fa-thumbs-up"></i> {{ resume.overall_score }}%
+                                </span>
+                                {% elif resume.overall_score >= 40 %}
+                                <span class="score-badge average">
+                                    <i class="fas fa-minus"></i> {{ resume.overall_score }}%
+                                </span>
+                                {% else %}
+                                <span class="score-badge poor">
+                                    <i class="fas fa-thumbs-down"></i> {{ resume.overall_score }}%
+                                </span>
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Score Breakdown -->
+            {% if resume.scores %}
+            <div class="detail-card mb-4">
+                <div class="card-header">
+                    <div class="header-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h5>Score Breakdown</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% for category, score in resume.scores.items() %}
+                        <div class="col-md-4">
+                            <div class="score-card {% if score >= 80 %}excellent{% elif score >= 60 %}good{% elif score >= 40 %}average{% else %}poor{% endif %}">
+                                <div class="score-value">{{ score }}%</div>
+                                <div class="score-label">{{ category }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Recommendations -->
+            {% if resume.recommendations %}
+            <div class="detail-card mb-4">
+                <div class="card-header">
+                    <div class="header-icon" style="background: linear-gradient(135deg, #ffab00 0%, #ff6f00 100%);">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h5>Recommendations</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="recommendations-list">
+                        {% for rec in resume.recommendations %}
+                        <li>
+                            <div class="rec-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <span class="rec-text">{{ rec }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Skills Found -->
+            {% if resume.skills %}
+            <div class="detail-card">
+                <div class="card-header">
+                    <div class="header-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h5>Skills Identified</h5>
+                </div>
+                <div class="card-body">
+                    {% for skill in resume.skills %}
+                    <span class="skill-tag">
+                        <i class="fas fa-check-circle"></i> {{ skill }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Candidate Info -->
+        <div class="col-md-4">
+            <div class="candidate-card">
+                <div class="card-header">
+                    <i class="fas fa-user"></i>
+                    <h5>Candidate</h5>
+                </div>
+                <div class="card-body">
+                    <div class="candidate-profile">
+                        <div class="candidate-avatar">{{ candidate.username[0]|upper }}</div>
+                        <div class="candidate-details">
+                            <div class="name">{{ candidate.username }}</div>
+                            <div class="email">{{ candidate.email }}</div>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('hr.view_candidate', user_id=candidate._id) }}" class="view-profile-btn mt-3">
+                        <i class="fas fa-user"></i> View Full Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
